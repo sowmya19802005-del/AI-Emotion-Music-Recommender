@@ -1,6 +1,6 @@
 import streamlit as st
 import pickle
-import random
+import os
 from googleapiclient.discovery import build
 
 # -------------------------------
@@ -10,12 +10,16 @@ model = pickle.load(open("model.pkl", "rb"))
 vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
 
 # -------------------------------
-# 🔑 YouTube API Setup
+# 🔐 Load YouTube API Key Securely
 # -------------------------------
-# 👉 Replace with your valid YouTube Data API v3 key
-#AIzaSyDkARBltcW8l7YpRMPReGBSo2y0ybV4Ae4
-API_KEY = "AIzaSyDkARBltcW8l7YpRMPReGBSo2y0ybV4Ae4"
+if "youtube" in st.secrets:
+    API_KEY = st.secrets["youtube"]["api_key"]
+else:
+    # fallback for local testing
+    API_KEY = os.getenv("YOUTUBE_API_KEY", "YOUR_API_KEY_HERE")
+
 YOUTUBE = build("youtube", "v3", developerKey=API_KEY)
+
 
 def get_youtube_songs(emotion, max_results=3):
     """Search for emotion-based songs on YouTube dynamically."""
@@ -34,6 +38,7 @@ def get_youtube_songs(emotion, max_results=3):
         video_url = f"https://www.youtube.com/watch?v={item['id']['videoId']}"
         songs.append((video_title, video_url))
     return songs
+
 
 # -------------------------------
 # 🌈 Streamlit Page Configuration
@@ -79,18 +84,18 @@ if st.button("🎵 Get My Songs"):
 
         # Display detected emotion
         st.success(f"**Detected Emotion:** {emotion.capitalize()} 🧠")
-        # 🎨 Add visual effects based on emotion
+
+        # 🎨 Visual effects based on emotion
         if "happy" in emotion or "joy" in emotion or "excited" in emotion:
-            st.balloons()  # Balloons for happy / excited moods
+            st.balloons()
         elif "sad" in emotion:
-            st.snow()  # Snow for sad moods
+            st.snow()
         elif "anger" in emotion or "angry" in emotion:
             st.warning("😡 Take a deep breath — here are some songs to cool off!")
         elif "love" in emotion:
             st.info("💖 Love is in the air — enjoy your songs!")
         else:
             st.write("🎧 Here's some music to match your vibe!")
-
 
         # Fetch dynamic YouTube recommendations
         st.subheader("🎧 Recommended Songs Just for You:")
@@ -103,16 +108,18 @@ if st.button("🎵 Get My Songs"):
             st.warning("⚠️ No songs found — try again with a different mood!")
     else:
         st.error("Please enter some text first 💬")
-    
-    
-    st.markdown(
+
+# -------------------------------
+# 👩‍💻 Project Credits
+# -------------------------------
+st.markdown(
     """
     <hr style='border: 1px solid #444; margin-top: 50px;'>
     <div style='text-align: center; color: #E0E0E0; font-family: "Segoe UI", sans-serif;'>
         <h3 style='color: #7FFFD4;'>👩‍💻 Project Members</h3>
         <p><b>Neil</b> • <b>Gautam Vats</b> • <b>Rahul Reddy</b> • <b>Mohith Venkatesh</b></p>
         <p style='font-size: 15px; color: #aaa;'>
-            📘 Developed as part of <i>AI Project – Emotion Detection & Music Recommender System</i>
+            📘 Developed as part of <i>AI Mini Project – Emotion Detection & Music Recommender System</i>
         </p>
     </div>
     """,
