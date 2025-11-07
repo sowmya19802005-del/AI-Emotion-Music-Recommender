@@ -82,6 +82,17 @@ if st.button("🎵 Get My Songs"):
         input_vec = vectorizer.transform([user_input])
         emotion = model.predict(input_vec)[0].lower()
 
+        import matplotlib.pyplot as plt
+
+        proba = model.predict_proba(input_vec)[0]
+        labels = model.classes_
+
+        fig, ax = plt.subplots()
+        ax.pie(proba, labels=labels, autopct='%1.1f%%', startangle=90)
+        ax.axis('equal')
+        st.pyplot(fig)
+
+
         # Display detected emotion
         st.success(f"**Detected Emotion:** {emotion.capitalize()} 🧠")
 
@@ -103,7 +114,10 @@ if st.button("🎵 Get My Songs"):
 
         if songs:
             for title, url in songs:
-                st.markdown(f"- 🎵 [{title}]({url})")
+                st.markdown(f"### 🎵 {title}")
+                video_id = url.split("v=")[-1]
+                st.video(f"https://www.youtube.com/watch?v={video_id}")
+
         else:
             st.warning("⚠️ No songs found — try again with a different mood!")
     else:
