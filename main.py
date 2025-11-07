@@ -119,7 +119,7 @@ st.markdown(
         <h3 style='color: #7FFFD4;'>👩‍💻 Project Members</h3>
         <p><b>Neil</b> • <b>Gautam Vats</b> • <b>Rahul Reddy</b> • <b>Mohith Venkatesh</b></p>
         <p style='font-size: 15px; color: #aaa;'>
-            📘 Developed as part of <i>AI Mini Project – Emotion Detection & Music Recommender System</i>
+            📘 Developed as part of <i>AI Project – Emotion Detection & Music Recommender System</i>
         </p>
     </div>
     """,
