@@ -1,6 +1,7 @@
 import streamlit as st
 import pickle
 import os
+import matplotlib.pyplot as plt
 from googleapiclient.discovery import build
 
 # -------------------------------
@@ -15,12 +16,13 @@ vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
 if "youtube" in st.secrets:
     API_KEY = st.secrets["youtube"]["api_key"]
 else:
-    # fallback for local testing
     API_KEY = os.getenv("YOUTUBE_API_KEY", "YOUR_API_KEY_HERE")
 
 YOUTUBE = build("youtube", "v3", developerKey=API_KEY)
 
-
+# -------------------------------
+# 🎵 YouTube Song Search Function
+# -------------------------------
 def get_youtube_songs(emotion, max_results=3):
     """Search for emotion-based songs on YouTube dynamically."""
     query = f"{emotion} mood songs"
@@ -45,7 +47,7 @@ def get_youtube_songs(emotion, max_results=3):
 # -------------------------------
 st.set_page_config(page_title="AI Emotion Music Recommender", page_icon="🎵", layout="centered")
 
-# Custom styling
+# Custom CSS styling
 st.markdown("""
     <style>
         body {
@@ -74,16 +76,19 @@ st.markdown("""
 st.title("🎶 AI Emotion Detection + Live YouTube Song Recommender")
 st.markdown("**Describe your feelings** and let the AI find songs that match your mood 💫")
 
+# Text input only
 user_input = st.text_area("💬 How are you feeling today?", placeholder="e.g. I'm feeling stressed about exams...")
 
+# -------------------------------
+# 🧠 Emotion Prediction
+# -------------------------------
 if st.button("🎵 Get My Songs"):
     if user_input.strip() != "":
         # Predict emotion
         input_vec = vectorizer.transform([user_input])
         emotion = model.predict(input_vec)[0].lower()
 
-        import matplotlib.pyplot as plt
-
+        # Probability pie chart
         proba = model.predict_proba(input_vec)[0]
         labels = model.classes_
 
@@ -92,23 +97,22 @@ if st.button("🎵 Get My Songs"):
         ax.axis('equal')
         st.pyplot(fig)
 
-
         # Display detected emotion
         st.success(f"**Detected Emotion:** {emotion.capitalize()} 🧠")
 
-        # 🎨 Visual effects based on emotion
-        if "happy" in emotion or "joy" in emotion or "excited" in emotion:
+        # 🎨 Emotion visual effects
+        if any(x in emotion for x in ["happy", "joy", "excited"]):
             st.balloons()
         elif "sad" in emotion:
             st.snow()
-        elif "anger" in emotion or "angry" in emotion:
+        elif any(x in emotion for x in ["anger", "angry"]):
             st.warning("😡 Take a deep breath — here are some songs to cool off!")
         elif "love" in emotion:
             st.info("💖 Love is in the air — enjoy your songs!")
         else:
             st.write("🎧 Here's some music to match your vibe!")
 
-        # Fetch dynamic YouTube recommendations
+        # 🎵 YouTube Recommendations
         st.subheader("🎧 Recommended Songs Just for You:")
         songs = get_youtube_songs(emotion)
 
@@ -117,7 +121,6 @@ if st.button("🎵 Get My Songs"):
                 st.markdown(f"### 🎵 {title}")
                 video_id = url.split("v=")[-1]
                 st.video(f"https://www.youtube.com/watch?v={video_id}")
-
         else:
             st.warning("⚠️ No songs found — try again with a different mood!")
     else:
