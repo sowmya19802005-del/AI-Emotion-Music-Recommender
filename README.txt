@@ -38,7 +38,7 @@ AI_Emotion_Music_Recommender/
 
 Installation and Setup
 Step 1: Clone the repository
-git clone https://github.com/YOUR_USERNAME/AI_Emotion_Music_Recommender.git
+git clone 
 cd AI_Emotion_Music_Recommender
 
 Step 2: Create a virtual environment
@@ -76,3 +76,4 @@ Neil	Model development and testing
 Gautam Vats	Streamlit interface
 Rahul Reddy	API integration
 Mohith Venkatesh	Dataset preparation and training
+
